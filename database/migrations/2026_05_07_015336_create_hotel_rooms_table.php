@@ -18,6 +18,7 @@ return new class extends Migration
                   ->constrained('room_type_accommodations')
                   ->onDelete('restrict');
             $table->integer('quantity')->unsigned();
+            $table->string('status')->default('Activo');
             $table->timestamps();
 
             $table->unique(['hotel_id', 'room_type_accommodation_id'], 'hotel_room_unique');

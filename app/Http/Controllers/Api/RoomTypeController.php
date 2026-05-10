@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RoomType;
-use App\Http\Requests\StoreRoomTypeRequest;
-use App\Http\Requests\UpdateRoomTypeRequest;
 use Illuminate\Http\JsonResponse;
 
 class RoomTypeController extends Controller
@@ -14,38 +12,50 @@ class RoomTypeController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(RoomType::all(), 200);
+        return response()->json(RoomType::with('accommodations')->get());
     }
 
-    public function store(StoreRoomTypeRequest $request): JsonResponse
+    public function storeRelation(Request $request, $id): JsonResponse
     {
-        $roomType = RoomType::create($request->validated());
+        $roomType = RoomType::findOrFail($id);
+        $accommodationId = $request->accommodation_id;
+
+        // Reglas de negocio Decameron
+        $isValid = false;
+        if ($id == 1 && in_array($accommodationId, [1, 2])) $isValid = true; // Estándar
+        if ($id == 2 && in_array($accommodationId, [3, 4])) $isValid = true; // Junior
+        if ($id == 3 && in_array($accommodationId, [1, 2, 3])) $isValid = true; // Suite
+
+        if (!$isValid) {
+            return response()->json(['message' => 'Combinación no permitida por reglas de Decameron.'], 422);
+        }
+
+        $roomType->accommodations()->syncWithoutDetaching([$accommodationId]);
 
         return response()->json([
-            'message' => 'Tipo de habitación creado con éxito',
-            'data' => $roomType
+            'message' => 'Acomodación vinculada con éxito',
+            'data' => $roomType->load('accommodations')
         ], 201);
     }
 
-    public function show(RoomType $roomType): JsonResponse
+    public function destroyRelation($roomTypeId, $accommodationId): JsonResponse
     {
-        return response()->json($roomType, 200);
+        try {
+            $roomType = RoomType::findOrFail($roomTypeId);
+            
+            // detach quita la fila de la tabla intermedia sin borrar el Tipo ni la Acomodación
+            $roomType->accommodations()->detach($accommodationId);
+
+            return response()->json(['message' => 'Vínculo eliminado con éxito'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar', 'error' => $e->getMessage()], 500);
+        }
     }
 
-    public function update(UpdateRoomTypeRequest $request, RoomType $roomType): JsonResponse
+    public function getAvailableRules(): \Illuminate\Http\JsonResponse
     {
-        $roomType->update($request->validated());
-
-        return response()->json([
-            'message' => 'Tipo de habitación actualizado',
-            'data' => $roomType
-        ], 200);
-    }
-
-    public function destroy(RoomType $roomType): JsonResponse
-    {
-        $roomType->delete();
-        return response()->json(['message' => 'Tipo de habitación eliminado'], 200);
+        $rules = \App\Models\RoomTypeAccommodation::with(['roomType', 'accommodation'])->get();
+        return response()->json($rules);
     }
 
 }

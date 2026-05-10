@@ -21,6 +21,7 @@ class StoreRoomTypeAccommodationRequest extends FormRequest
             'hotel_id' => 'required|exists:hotels,id',
             'room_type_accommodation_id' => 'required|exists:room_type_accommodations,id',
             'quantity' => 'required|integer|min:1',
+            'status' => 'nullable|string|in:Activo,Inactivo',
         ];
     }
 
@@ -44,6 +45,13 @@ class StoreRoomTypeAccommodationRequest extends FormRequest
                 $validator->errors()->add('room_type_accommodation_id', "Este hotel ya tiene configurada esta combinación de tipo de habitación y acomodación.");
             }
         });
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'status' => $this->status ?? 'Activo', // Asegura que siempre sea Activo al crear
+        ]);
     }
     
 }

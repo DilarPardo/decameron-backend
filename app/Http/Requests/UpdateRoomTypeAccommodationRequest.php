@@ -7,6 +7,22 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRoomTypeAccommodationRequest extends StoreRoomTypeAccommodationRequest
 {
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'hotel_id' => 'required|exists:hotels,id',
+            'room_type_accommodation_id' => 'required|exists:room_type_accommodations,id',
+            'quantity' => 'required|integer|min:1',
+            'status' => 'required|string|in:Activo,Inactivo',
+        ];
+    }
+
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
