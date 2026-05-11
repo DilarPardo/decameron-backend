@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://decameron-frontend-bg3b.vercel.app'],
+    'allowed_origins' => [
+        'https://decameron-frontend-bg3b.vercel.app',
+        'https://decameron-frontend-bg3b-dilarpardos-projects.vercel.app',
+        'http://localhost:3000',
+    ],
 
     'allowed_origins_patterns' => [],
 
