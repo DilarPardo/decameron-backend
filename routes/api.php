@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\RoomTypeAccommodationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\DashboardController;
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -29,8 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('states/{stateId}/cities', [LocationController::class, 'getCitiesByState']);
 
     Route::get('room-rules', [RoomTypeController::class, 'getAvailableRules']);
-
-    Route::apiResource('hotel-rooms', RoomTypeAccommodationController::class);
 
     Route::get('dashboard-stats', [DashboardController::class, 'index']);
     
