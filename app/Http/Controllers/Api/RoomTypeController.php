@@ -66,7 +66,10 @@ class RoomTypeController extends Controller
             return response()->json(['message' => 'Tipo de habitación no encontrado'], 404);
         }
 
-        return response()->json($roomType->accommodations);
+        // Al enviarlo así, garantizamos que React reciba un array claro
+        return response()->json([
+            'data' => $roomType->accommodations
+        ]);
     }
 
 }
