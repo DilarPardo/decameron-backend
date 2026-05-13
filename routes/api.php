@@ -26,10 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('room-types/{roomTypeId}/accommodations/{accommodationId}', [RoomTypeController::class, 'destroyRelation']);
     Route::apiResource('room-types', RoomTypeController::class)->only(['index', 'show']);
     Route::get('room-rules', [RoomTypeController::class, 'getAvailableRules']);
-    Route::get('room-types/{id}/accommodations', [RoomTypeController::class, 'getAccommodations']);
 
     Route::apiResource('accommodations', AccommodationController::class)->only(['index', 'show']);
     Route::apiResource('hotel-rooms', RoomTypeAccommodationController::class);
+    Route::get('room-types/{id}/accommodations', [RoomTypeAccommodationController::class, 'getByRoomType']);
 
     Route::get('states', [LocationController::class, 'getStates']);
     Route::get('states/{stateId}/cities', [LocationController::class, 'getCitiesByState']);  

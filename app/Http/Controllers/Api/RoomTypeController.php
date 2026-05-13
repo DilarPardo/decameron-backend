@@ -58,18 +58,4 @@ class RoomTypeController extends Controller
         return response()->json($rules);
     }
 
-    public function getAccommodations($id): JsonResponse
-    {
-        $roomType = RoomType::with('accommodations')->find($id);
-
-        if (!$roomType) {
-            return response()->json(['message' => 'Tipo de habitación no encontrado'], 404);
-        }
-
-        // Al enviarlo así, garantizamos que React reciba un array claro
-        return response()->json([
-            'data' => $roomType->accommodations
-        ]);
-    }
-
 }
